@@ -11,7 +11,7 @@ import type {
   TransactionRequest,
   TransactionSerializable,
 } from '../../types/transaction.js'
-import type { IsUndefined, UnionOmit } from '../../types/utils.js'
+import type { UnionOmit } from '../../types/utils.js'
 import { assertCurrentChain } from '../../utils/chain.js'
 import { getTransactionError } from '../../utils/errors/getTransactionError.js'
 import { extract } from '../../utils/formatters/extract.js'
@@ -27,12 +27,7 @@ export type SendTransactionParameters<
   TChain extends Chain | undefined = Chain | undefined,
   TAccount extends Account | undefined = Account | undefined,
   TChainOverride extends Chain | undefined = Chain,
-> = UnionOmit<
-  FormattedTransactionRequest<
-    IsUndefined<TChain> extends true ? TChainOverride : TChain
-  >,
-  'from'
-> &
+> = UnionOmit<FormattedTransactionRequest<TChainOverride | TChain>, 'from'> &
   GetAccountParameter<TAccount> &
   GetChain<TChain, TChainOverride>
 
@@ -157,8 +152,10 @@ export async function sendTransaction<
       })
     }
 
-    const format =
-      chain?.formatters?.transactionRequest?.format || formatTransactionRequest
+    const formatters =
+      chain?.formatters?.transactionRequest ||
+      client.chain?.formatters?.transactionRequest
+    const format = formatters?.format || formatTransactionRequest
     const request = format({
       // Pick out extra data that might exist on the chain's transaction request type.
       ...extract(rest, { format }),

@@ -444,6 +444,7 @@ describe('formatters', () => {
         "maxFeePerGas": "0x2",
         "maxPriorityFeePerGas": "0x1",
         "nonce": "0x1",
+        "type": undefined,
         "value": "0x1",
       }
     `)

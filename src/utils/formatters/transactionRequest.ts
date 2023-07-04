@@ -9,6 +9,12 @@ export type FormattedTransactionRequest<
   TChain extends Chain | undefined = Chain | undefined,
 > = ExtractFormatterParameters<TChain, 'transactionRequest', TransactionRequest>
 
+export const transactionType = {
+  legacy: '0x0',
+  eip2930: '0x1',
+  eip1559: '0x2',
+} as const
+
 export function formatTransactionRequest(
   transactionRequest: Partial<TransactionRequest>,
 ) {
@@ -33,6 +39,10 @@ export function formatTransactionRequest(
     nonce:
       typeof transactionRequest.nonce !== 'undefined'
         ? numberToHex(transactionRequest.nonce)
+        : undefined,
+    type:
+      typeof transactionRequest.type !== 'undefined'
+        ? transactionType[transactionRequest.type]
         : undefined,
     value:
       typeof transactionRequest.value !== 'undefined'
